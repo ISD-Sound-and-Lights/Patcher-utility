@@ -23,7 +23,25 @@ vector<string> split(string str, string sep){
     }
     return arr;
 }
+class Block{
+public:
+    int start;
+    int end;
+    string name;
 
+    void printInfo(){
+        cout << name<<endl;
+        cout << "\t"<<start<<"-"<<end<<endl;
+    }
+
+    Block(int s, int e, string n){
+        start = s;
+        end = e;
+        name = n;
+    }
+};
+
+vector<Block> blocks;
 class DMXDevice{
 public:
     int footprint;
@@ -122,6 +140,72 @@ void newDevice(){
     devices.push_back( DMXDevice(footprint,name,quantity));
 }
 
+void newBlock(){
+    string name;
+    int start;
+    int end;
+
+    cout << "Block addition mode:"<<endl;
+    cout << "Name: ";
+    cin >> name;
+    cout <<"Start: ";
+    cin >> start;
+    cout << "End: ";
+    cin >> end;
+
+    blocks.push_back(Block(start,end,name));
+}
+
+void printAllBlocks(){
+    for(int i = 0; i < blocks.size(); i++){
+        cout << i<< ": ";
+        blocks[i].printInfo();
+    }
+    cout<<"Press any key to continue..."<<endl;
+    getch();
+}
+
+void editBlock(){
+    int id;
+
+    cout << "Block edit mode:"<<endl;
+    printAllBlocks();
+    cout << "Enter Block id: ";
+
+    cin >> id;
+    anykey();
+    cls();
+    cout << "Block edit mode:"<<endl;
+
+    cout << "Editing ";
+    devices[id].printInfo();
+
+    cout << "s. Edit start\nn. Edit name\ne. Edit end\n";
+    char in = getch();
+    cls();
+    cout << "Device edit mode:"<<endl;
+    if(in == 's'){
+        cout << "Enter new start: ";
+        int n;
+        cin >> n;
+
+        blocks[id].start=n;
+    }else if (in == 'n'){
+        cout << "Enter new name: ";
+        string n;
+        cin>> n;
+
+        blocks[id].name=n;
+    }else if (in == 'e'){
+        cout << "Enter new end: ";
+        int n;
+        cin >> n;
+
+        blocks[id].end=n;
+    }
+}
+
+
 void editDevice(){
     int id;
 
@@ -167,7 +251,13 @@ void generate(){
     bool blocked[512];
     string output = "";
     for(int i = 0; i < 512; i++){
-        blocked[i] = false;
+            blocked[i] = false;
+    }
+
+    for(int i = 0; i < blocks.size(); i++){
+        for(int z = blocks[i].start-1; z< blocks[i].end;z++){
+            blocked[z] = true;
+        }
     }
 
     for(int i = 0; i < devices.size(); i++){
@@ -234,7 +324,22 @@ int main(){
                 cls();
             }
         }else if (in == 'b'){
-            
+            while(true){
+                cout <<"n. new block\nl. list blocks\ne. edit blocks\nq. back\n";
+
+                char in = getch();
+                cls();
+                if(in=='n'){
+                    newBlock();
+                }else if (in == 'l'){
+                    printAllBlocks();
+                }else if(in == 'e'){
+                    editBlock();
+                }else if ( in == 'q'){
+                    break;
+                }
+                cls();
+            }
         }else if (in == 'g'){
             generate();
         }
