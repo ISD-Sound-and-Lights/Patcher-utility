@@ -162,24 +162,84 @@ void editDevice(){
     }
 }
 
+void generate(){
+    cout << "Generating standard\n";
+    bool blocked[512];
+    string output = "";
+    for(int i = 0; i < 512; i++){
+        blocked[i] = false;
+    }
+
+    for(int i = 0; i < devices.size(); i++){
+        int requiredSize = devices[i].quantity * devices[i].footprint;
+        int foundAdress;
+        for(int n = 1; n < 513; n++){//Iterate through entire patch space
+            bool bigEnough = true;
+            for(int z = n-1; z < requiredSize; z++){
+                if (blocked[z]){
+                    bigEnough = false;
+                    break;
+                }
+            }
+            if(bigEnough){
+                foundAdress = n;
+                break;
+            }
+        }
+        for(int z = foundAdress; z < requiredSize; z++){
+            blocked[z] = true;
+        }
+        for(int n = 0; n < devices[i].quantity;n++){
+            output+=devices[i].name+"(";
+            output+=to_string(n+1)+"),";
+            output+=to_string(devices[i].footprint)+",";
+            output+=to_string((n*devices[i].footprint)+foundAdress);
+            output+="\n";
+        }
+    }
+
+    ofstream outfile;
+    outfile.open("PatchingStandard.csv");
+    outfile<<output;
+    outfile.close();
+    cout << "Standard generation complete, press any key to continue\n";
+    anykey();
+}
+
 int main(){
     cout << banner;
     loadDevices();
     cout <<endl<<endl;
     while (true){
-        cout <<"n. new device\nl. list device\ns. save devices\ne. edit device\n";
-
+        cout << "d. devices\nb. blocks\ng. generate standard\n";
         char in = getch();
         cls();
-        if(in == 'n'){
-            newDevice();
-        }else if (in == 'l'){
-            printAllDevices();
-        }else if (in == 's'){
-            saveDevices();
-        }else if (in == 'e'){
-            editDevice();
+        if(in == 'd'){
+            while (true){
+                cout <<"n. new device\nl. list device\ns. save devices\ne. edit device\nq. back\n";
+
+                char in = getch();
+                cls();
+                if(in == 'n'){
+                    newDevice();
+                }else if (in == 'l'){
+                    printAllDevices();
+                }else if (in == 's'){
+                    saveDevices();
+                }else if (in == 'e'){
+                    editDevice();
+                }else if (in=='q'){
+                    break;
+                }
+                cls();
+            }
+        }else if (in == 'b'){
+            
+        }else if (in == 'g'){
+            generate();
         }
+
+
         cls();
     }
     return 0;
