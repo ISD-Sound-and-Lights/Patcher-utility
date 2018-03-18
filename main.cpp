@@ -200,6 +200,7 @@ static class PatchingStandard{
         string line;
         while(getline(*infile, line)){
             vector<string>parameters=split(line, seperator);
+            cout << "Allocating "<< parameters[0] <<" from standard file\n";
             newAllocation(parameters[0],stoi(parameters[1]),stoi(parameters[1])+stoi(parameters[2])-1, stoi(parameters[2]));
         }
     }
@@ -293,6 +294,7 @@ void loadBlocks(){
 void loadDevices(){
     ifstream infile;
     infile.open("devices.icsv", ios::in);
+
 
     string input;
     while(getline(infile, input)){
@@ -460,15 +462,15 @@ void generate(){
     }
 
     for(int i =0; i < patchingStandard.DMXStart.size();i++){
-        for(int z = patchingStandard.DMXStart[i]-1; z < patchingStandard.DMXEnd[i]; i++){
-            cout << "Blocking " <<z<<endl;
+        for(int z = patchingStandard.DMXStart[i]-1; z < patchingStandard.DMXEnd[i]; z++){
+            cout << "Blocking " <<z<<" for loaded devices"<<endl;
             blocked[z] = true;
         }
     }
 
     for(int i = 0; i < blocks.size(); i++){
         for(int z = blocks[i].start-1; z< blocks[i].end;z++){
-            cout << "Blocking " <<z<<endl;
+            cout << "Blocking " <<z<<" for allocated blocks"<<endl;
             blocked[z] = true;
         }
         patchingStandard.newAllocation(blocks[i].name, blocks[i].start, blocks[i].end, blocks[i].end-blocks[i].start,true);
@@ -523,8 +525,12 @@ void loadStandard(){
     infile.open(name);
     patchingStandard.deserialise(&infile);
     infile.close();
+    cout << "Standard load complete. Press any key to continue...\n";
+    anykey();
+    anykey();
 }
 int main(){
+    cls();
     cout << banner;
     hidecursor();
     //Loading process
