@@ -10,6 +10,7 @@ using namespace std;
 const int universeSize = 512;
 
 const string banner = "Eyepatch";
+
 const string seperator=",,,,";
 
 vector<string> split(string str, string sep){
@@ -39,6 +40,8 @@ public:
         end = e;
         name = n;
     }
+
+    
 };
 
 vector<Block> blocks;
@@ -180,7 +183,7 @@ void editBlock(){
     cout << "Editing ";
     devices[id].printInfo();
 
-    cout << "s. Edit start\nn. Edit name\ne. Edit end\n";
+    cout << "s. Edit start\nn. Edit name\ne. Edit end\nd. Delete Block";
     char in = getch();
     cls();
     cout << "Device edit mode:"<<endl;
@@ -202,6 +205,15 @@ void editBlock(){
         cin >> n;
 
         blocks[id].end=n;
+    }else if (in == 'd'){
+        cout << "Are you sure to delete this block?\n";
+        blocks[id].printInfo();
+        cout << "y/n\n";
+        char yn = getch();
+        if(yn == 'y'){
+            cout << "deleting block...\n";
+            blocks.erase(blocks.begin() + id);
+        }
     }
 }
 
@@ -221,7 +233,7 @@ void editDevice(){
     cout << "Editing ";
     devices[id].printInfo();
 
-    cout << "q. Edit quantity\nn. Edit name\nf. Edit footprint\n";
+    cout << "q. Edit quantity\nn. Edit name\nf. Edit footprint\nd. Delete footprint\n";
     char in = getch();
     cls();
     cout << "Device edit mode:"<<endl;
@@ -243,13 +255,22 @@ void editDevice(){
         cin >> n;
 
         devices[id].footprint=n;
+    }else if (in == 'd'){
+        cout << "Are you sure to delete this device?\n";
+        devices[id].printInfo();
+        cout << "y/n\n";
+        char yn = getch();
+        if(yn == 'y'){
+            cout << "deleting device...\n";
+            devices.erase(devices.begin()+ id);
+        }
     }
 }
 
 void generate(){
     cout << "Generating standard\n";
     bool blocked[512];
-    string output = "";
+    string output = "name,footprint,adress\n";
     for(int i = 0; i < 512; i++){
             blocked[i] = false;
     }
