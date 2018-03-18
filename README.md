@@ -1,4 +1,53 @@
-# Patcher-utility
-An application that automatically creates a patching standard
+# eyepatch
+Creates a patching standard from a list of lighting fixtures.
 
-See [here] ("https://github.com/ISD-Sound-and-Lights/Patcher-utility/wiki/Roadmap") for roadmap
+**This project is part of the inventor ecosystem, which you can read about [here]().**
+
+## Installation
+You can install from source, from an install script, or from Homebrew.
+
+### Install Script
+**1.** Click [here](example.com) for the install script. 
+
+**2.** Give it run permissions with 
+```
+$ chmod +x install_eyepatch.sh
+```
+
+**3.** and then run it (you may need sudo):
+```
+$ sudo ./install_eyepatch.sh
+```
+
+### Homebrew
+**1.** Just use:
+```
+$ brew install eyepatch
+```
+
+### Source
+**Here be dragons! You will likely not get a stable release. Be careful.**
+
+**1.** Download the source from Github.
+
+**2.** Unzip the downloaded file.
+```
+$ unzip eyepatch-master.zip
+```
+
+**3.** CD into the directory and compile `main.cpp` with:
+```
+$ cd eyepatch-master
+$ gcc main.cpp -o eyepatch
+```
+
+**4.** Move the `eyepatch` executable to a sensible location in your $PATH.
+```
+$ sudo mv ./eyepatch /usr/local/bin/eyepatch
+```
+
+**5.** Check you can run it with `eyepatch`.
+```
+$ cd ~
+$ eyepatch
+```
