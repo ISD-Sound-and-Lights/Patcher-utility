@@ -7,7 +7,6 @@
 #include <sstream>
 using namespace rlutil;
 using namespace std;
-
 const int universeSize = 512;
 
 const string banner = "Eyepatch";
@@ -305,41 +304,47 @@ void editDevice(){
 void generate(){
     cout << "Generating standard\n";
     bool blocked[512];
-    string output = "name,footprint,adress\n";
+    string output = "name,footprint,address\n";
     for(int i = 0; i < 512; i++){
             blocked[i] = false;
     }
 
     for(int i = 0; i < blocks.size(); i++){
         for(int z = blocks[i].start-1; z< blocks[i].end;z++){
+            cout << "Blocking " <<z<<endl;
             blocked[z] = true;
         }
     }
 
     for(int i = 0; i < devices.size(); i++){
         int requiredSize = devices[i].quantity * devices[i].footprint;
-        int foundAdress;
+        int foundaddress;
         for(int n = 1; n < 513; n++){//Iterate through entire patch space
             bool bigEnough = true;
-            for(int z = n-1; z < requiredSize; z++){
+            cout << "Searching address " << n<<endl;
+            for(int z = n-1; z < requiredSize+n-1; z++){
+                cout << "Checking allocation of " << z<<endl;
                 if (blocked[z]){
+                    cout << "Allocation invalid"<<endl;
                     bigEnough = false;
                     break;
                 }
+                cout << "Allocation avalible"<<endl;
             }
             if(bigEnough){
-                foundAdress = n;
+                foundaddress = n;
                 break;
             }
         }
-        for(int z = foundAdress; z < requiredSize; z++){
+        for(int z = foundaddress; z < requiredSize+foundaddress; z++){
+            cout << "Blocking " << z<<endl;
             blocked[z] = true;
         }
         for(int n = 0; n < devices[i].quantity;n++){
             output+=devices[i].name+"(";
             output+=to_string(n+1)+"),";
             output+=to_string(devices[i].footprint)+",";
-            output+=to_string((n*devices[i].footprint)+foundAdress);
+            output+=to_string((n*devices[i].footprint)+foundaddress);
             output+="\n";
         }
     }
@@ -358,11 +363,13 @@ int main(){
     loadBlocks();
     cout <<endl<<endl;
     while (true){
-        cout << "d. devices\nb. blocks\ng. generate standard\n";
+        cout << "\033[22;31md. devices\n\033[22;32mb. blocks\n\033[22;34mg. generate standard\n";
+        resetColor();
         char in = getch();
         cls();
         if(in == 'd'){
             while (true){
+                setColor(RED);
                 cout <<"n. new device\nl. list device\ns. save devices\ne. edit device\nq. back\n";
 
                 char in = getch();
@@ -382,6 +389,7 @@ int main(){
             }
         }else if (in == 'b'){
             while(true){
+                setColor(GREEN);
                 cout <<"n. new block\nl. list blocks\ne. edit blocks\ns. save blocks\nq. back\n";
 
                 char in = getch();
