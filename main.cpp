@@ -13,6 +13,48 @@ const string banner = "Eyepatch";
 
 const string seperator=",,,,";
 
+static class Settings{
+    vector<string> settingName;
+    vector<bool> settingState;
+public:
+
+    void registerSetting(string name, bool defaultState=true){
+        settingName.push_back(name);
+        settingState.push_back(defaultState);
+    }
+
+    bool getSetting(string name){
+        int index;
+        for(int i = 0; i < settingName.size(); i++){
+            if(settingName[i] == name){
+                index = i;
+                break;
+            }
+        }
+        return getSetting(index);
+    }
+
+    bool getSetting(int index){
+        return settingState[index];
+    }
+
+    string getSettingName(int index){
+        return settingName[index];
+    }
+
+    int getSettingsSize(){
+        return settingName.size();
+    }
+    void toggleSetting(int index){
+        settingState[index] = !settingState[index];
+    }
+}settings;
+
+void setColorIf(int code){
+    if(settings.getSetting("theme_colours")){
+        setColor(code);
+    }
+}
 
 vector<string> split(string str, string sep){
     char* cstr=const_cast<char*>(str.c_str());
@@ -359,17 +401,72 @@ void generate(){
 
 int main(){
     cout << banner;
+    hidecursor();
+    //Loading process
     loadDevices();
     loadBlocks();
-    cout <<endl<<endl;
+
+    //Register settings
+    settings.registerSetting("csv_output_blocks");
+    settings.registerSetting("dmx_adress_connected");
+    settings.registerSetting("theme_colours");
+    cout <<endl;
+
+    //mainloop
     while (true){
-        cout << "\033[22;31md. devices\n\033[22;32mb. blocks\n\033[22;34mg. generate standard\n";
+        //header
+        cout << "\033[22;31md. devices\n\033[22;32mb. blocks\n\033[22;34mg. generate standard\n\033[01;35ms. settings";
         resetColor();
+
+        //input
         char in = getch();
         cls();
-        if(in == 'd'){
+        if(in == 's'){
+            int point = 0;
+            while(true){
+                cls();
+                setColorIf(MAGENTA);
+
+
+                cout << "w and s to navigate, space to toggle\n\n";
+
+                for(int i = 0; i < settings.getSettingsSize(); i++){
+                    cout <<setw(30)<<settings.getSettingName(i);
+                    if(settings.getSetting(i)){
+                        setColor(GREEN);
+                        cout <<setw(5)<<"ON";
+                    }else{
+                        setColor (RED);
+                        cout<<setw(5) << "OFF";
+                    }
+                    resetColor();
+                    setColorIf(MAGENTA);
+
+                    if(i == point){
+                        cout <<"<";
+                    }
+                    cout<<endl;
+                }
+                char in = getch();
+                cout << in <<point<<endl;
+                if(in == 'w'){
+                    point -=1;
+                    if(point == -1){
+                        point=settings.getSettingsSize()-1;
+                    }
+                }else if (in == 's'){
+                    point += 1;
+                    if(point == settings.getSettingsSize()){
+                        point = 0;
+                    }
+                }else if (in == ' '){
+                    settings.toggleSetting(point);
+                }
+
+            }
+        }else if(in == 'd'){
             while (true){
-                setColor(RED);
+                setColorIf(RED);
                 cout <<"n. new device\nl. list device\ns. save devices\ne. edit device\nq. back\n";
 
                 char in = getch();
@@ -389,7 +486,7 @@ int main(){
             }
         }else if (in == 'b'){
             while(true){
-                setColor(GREEN);
+                setColorIf(GREEN);
                 cout <<"n. new block\nl. list blocks\ne. edit blocks\ns. save blocks\nq. back\n";
 
                 char in = getch();
