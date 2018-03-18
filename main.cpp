@@ -5,6 +5,8 @@
 #include"rlutil.h"
 #include <iomanip>
 #include <sstream>
+#include<cctype>
+#include <algorithm>
 using namespace rlutil;
 using namespace std;
 const int universeSize = 512;
@@ -12,6 +14,27 @@ const int universeSize = 512;
 const string banner = "Eyepatch";
 
 const string seperator=",,,,";
+
+bool to_bool(std::string str) {
+    std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+    std::istringstream is(str);
+    bool b;
+    is >> std::boolalpha >> b;
+    return b;
+}
+
+// ...
+vector<string> split(string str, string sep){
+    char* cstr=const_cast<char*>(str.c_str());
+    char* current;
+    vector<std::string> arr;
+    current=strtok(cstr,sep.c_str());
+    while(current != NULL){
+        arr.push_back(current);
+        current=strtok(NULL, sep.c_str());
+    }
+    return arr;
+}
 
 static class Settings{
     vector<string> settingName;
@@ -48,6 +71,37 @@ public:
     void toggleSetting(int index){
         settingState[index] = !settingState[index];
     }
+
+    void setSetting(int index, bool state){
+        settingState[index] = state;
+    }
+
+    void setSetting(string name, bool state){
+        int index;
+        for(int i = 0; i < settingName.size(); i++){
+            if(settingName[i] == name){
+                index = i;
+                break;
+            }
+        }
+        setSetting(index, state);
+    }
+
+
+
+    void serialise(ofstream * out){
+        for(int i = 0; i < getSettingsSize(); i++){
+            *out<<getSettingName(i)<<seperator<<getSetting(i)<<"\n";
+        }
+    }
+
+    void deserialise(ifstream * in){
+        string line;
+        while(getline(*in, line)){
+            vector<string> parameters =split(line, seperator);
+            setSetting(parameters[0], (stoi(parameters[1])==1)? true : false);
+        }
+    }
 }settings;
 
 void setColorIf(int code){
@@ -56,17 +110,7 @@ void setColorIf(int code){
     }
 }
 
-vector<string> split(string str, string sep){
-    char* cstr=const_cast<char*>(str.c_str());
-    char* current;
-    vector<std::string> arr;
-    current=strtok(cstr,sep.c_str());
-    while(current != NULL){
-        arr.push_back(current);
-        current=strtok(NULL, sep.c_str());
-    }
-    return arr;
-}
+
 class Block{
 public:
     int start;
@@ -411,6 +455,11 @@ int main(){
     settings.registerSetting("dmx_adress_connected");
     settings.registerSetting("theme_colours");
     cout <<endl;
+    //Load settings
+    ifstream infile;
+    infile.open("settings.icsv");
+    settings.deserialise(&infile);
+    infile.close();
 
     //mainloop
     while (true){
@@ -428,7 +477,7 @@ int main(){
                 setColorIf(MAGENTA);
 
 
-                cout << "w and s to navigate, space to toggle\n\n";
+                cout << "w and s to navigate, space to toggle q to quit\n\n";
 
                 for(int i = 0; i < settings.getSettingsSize(); i++){
                     cout <<setw(30)<<settings.getSettingName(i);
@@ -461,9 +510,15 @@ int main(){
                     }
                 }else if (in == ' '){
                     settings.toggleSetting(point);
+                }else if (in == 'q'){
+                    break;
                 }
 
             }
+            ofstream outfile;
+            outfile.open("settings.icsv");
+            settings.serialise(&outfile);
+            outfile.close();
         }else if(in == 'd'){
             while (true){
                 setColorIf(RED);
