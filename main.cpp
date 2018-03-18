@@ -180,12 +180,13 @@ public:
 };
 
 static class PatchingStandard{
+    public:
     std::vector<string> FixtureNames;
     std::vector<int>DMXStart;
     std::vector<int>DMXEnd;
     std::vector<int>footprint;
     std::vector<bool>isblock;
-public:
+
     void newAllocation(string n, int s, int e, int f, bool i = false){
         cout << "adding fixture " << n << " at adress " << s<< " to " << e << " to patching standard"<<endl;
         FixtureNames.push_back(n);
@@ -193,6 +194,14 @@ public:
         DMXEnd.push_back(e);
         footprint.push_back(f);
         isblock.push_back(i);
+    }
+
+    void deserialise(ifstream * infile){
+        string line;
+        while(getline(*in, line)){
+            vector<string>parameters=split(line, seperator);
+            newAllocation(parameters[0],parameters[1],parameters[1]+parameters-1, parameters[2]);
+        }
     }
 
     void serialise(ofstream * outfile){
@@ -448,6 +457,13 @@ void generate(){
             blocked[i] = false;
     }
 
+    for(int i =0; i < patchingStandard.DMXStart.size();i++){
+        for(int z = patchingStandard.DMXStart[i]-1; z < patchingStandard.DMXEnd[i]; i++){
+            cout << "Blocking " <<z<<endl;
+            blocked[z] = true;
+        }
+    }
+
     for(int i = 0; i < blocks.size(); i++){
         for(int z = blocks[i].start-1; z< blocks[i].end;z++){
             cout << "Blocking " <<z<<endl;
@@ -495,8 +511,17 @@ void generate(){
     outfile.close();
     cout << "Standard generation complete, press any key to continue\n";
     anykey();
+    patchingStandard=PatchingStandard(); //Clears patching standard
 }
-
+void loadStandard(){
+    cout << "Name of file (NO SPACES): "<<endl;
+    string name;
+    cin >> name;
+    ifstream infile;
+    infile.open(name);
+    PatchingStandard.deserialise(&infile);
+    infile.close();
+}
 int main(){
     cout << banner;
     hidecursor();
@@ -518,7 +543,7 @@ int main(){
     //mainloop
     while (true){
         //header
-        cout << "\033[22;31md. devices\n\033[22;32mb. blocks\n\033[22;34mg. generate standard\n\033[01;35ms. settings";
+        cout << "\033[22;31md. devices\n\033[22;32mb. blocks\n\033[22;34mg. generate standard\nl. load standard\033[01;35ms. settings";
         resetColor();
 
         //input
@@ -573,6 +598,8 @@ int main(){
             outfile.open("settings.icsv");
             settings.serialise(&outfile);
             outfile.close();
+        }else if(in=='l'){
+            loadStandard();
         }else if(in == 'd'){
             while (true){
                 setColorIf(RED);
