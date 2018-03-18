@@ -34,5 +34,6 @@
 *.out
 *.app
 
-# ICSV files
+# ICSV and CSV files
 *.icsv
+*.csv
