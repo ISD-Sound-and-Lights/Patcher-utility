@@ -196,6 +196,19 @@ static class PatchingStandard{
         isblock.push_back(i);
     }
 
+    void listAllDevices(){
+        for(int i =0; i < FixtureNames.size(); i ++)
+        cout <<i<<" "<<FixtureNames[i]<<endl<<"\tDMX Address: "<< DMXStart[i]<<endl<<"\tFootprint:"<<footprint[i]<<endl;
+        cout<<"Press any key to continue\n";
+        anykey();
+    }
+    void erase(int index){
+        FixtureNames.erase(FixtureNames.begin()+index);
+        DMXStart.erase(DMXStart.begin()+index);
+        DMXEnd.erase(DMXEnd.begin()+index);
+        footprint.erase(footprint.begin()+index);
+        isblock.erase(isblock.begin()+index);
+    }
     void deserialise(ifstream * infile){
         string line;
         while(getline(*infile, line)){
@@ -310,6 +323,73 @@ void printAllDevices(){
     }
     cout<<"Press any key to continue..."<<endl;
     getch();
+}
+
+void editFixedDevice(){
+    int id;
+
+    cout << "Fixed Device edit mode:"<<endl;
+    patchingStandard.listAllDevices();
+    cout << "Enter device id: ";
+    cin >> id;
+    anykey();
+    cls();
+    cout << "Device edit mode:"<<endl;
+
+    cout << "Editing ";
+    devices[id].printInfo();
+
+    cout << "n. Edit name\na. edit adress\nf. Edit footprint\nd. Delete footprint\n";
+    char in = getch();
+    cls();
+    cout << "Device edit mode:"<<endl;
+    if(in == 'a'){
+        cout << "Enter new adress: ";
+        int n;
+        cin >> n;
+
+        patchingStandard.DMXStart[id]=n;
+        patchingStandard.DMXEnd[id]=n+patchingStandard.footprint[id]-1;
+    }else if (in == 'n'){
+        cout << "Enter new name: ";
+        string n;
+        cin>> n;
+
+        patchingStandard.FixtureNames[id]=n;
+    }else if (in == 'f'){
+        cout << "Enter new DMX footprint: ";
+        int n;
+        cin >> n;
+
+        patchingStandard.footprint[id]=n;
+        patchingStandard.DMXEnd[id]=patchingStandard.DMXStart[id]+n-1;
+    }else if (in == 'd'){
+        cout << "Are you sure to delete this fixed device?\n";
+        cout << "y/n\n";
+        char yn = getch();
+        if(yn == 'y'){
+            cout << "deleting fixed device...\n";
+            patchingStandard.erase(id);
+        }
+    }
+}
+
+void newFixedDevice(){
+    string name;
+    int startAdress;
+    int footprint;
+
+    cout << "Fixed Device addition mode:"<<endl;
+    cout << "Name: ";
+    cin >> name;
+    cin.clear();
+    fflush(stdin);
+    cout <<"Startaddress: ";
+    cin >> startAdress;
+    cout << "DMX Footprint: ";
+    cin >> footprint;
+
+    patchingStandard.newAllocation(name, startAdress, startAdress+footprint-1,footprint);
 }
 
 void newDevice(){
@@ -551,7 +631,7 @@ int main(){
     //mainloop
     while (true){
         //header
-        cout << "\033[22;31md. devices\n\033[22;32mb. blocks\n\033[22;34mg. generate standard\nl. load standard\n\033[01;35ms. settings";
+        cout << "\033[22;31md. devices\nf. fixed devices\n\033[22;32mb. blocks\n\033[22;34mg. generate standard\nl. load standard\n\033[01;35ms. settings";
         resetColor();
 
         //input
@@ -608,6 +688,24 @@ int main(){
             outfile.close();
         }else if(in=='l'){
             loadStandard();
+        }else if (in == 'f'){
+            while (true){
+                setColorIf(RED);
+                cout <<"n. new fixed device\nl. list fixed device\ne. edit fixed device\nq. back\n";
+
+                char in = getch();
+                cls();
+                if(in == 'n'){
+                    newFixedDevice();
+                }else if (in == 'l'){
+                    patchingStandard.listAllDevices();
+                }else if (in == 'e'){
+                    editFixedDevice();
+                }else if (in=='q'){
+                    break;
+                }
+                cls();
+            }
         }else if(in == 'd'){
             while (true){
                 setColorIf(RED);
