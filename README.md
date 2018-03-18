@@ -6,18 +6,14 @@ Creates a patching standard from a list of lighting fixtures.
 ## Installation
 You can install from source, from an install script, or from Homebrew.
 
-### Install Script
-**1.** Click [here](example.com) for the install script. 
+### Binary
+**1.** Go to the releases page to find latest binary
 
-**2.** Give it run permissions with 
+**2.** Run it
 ```
-$ chmod +x install_eyepatch.sh
+$ ./[binaryname]
 ```
-
-**3.** and then run it (you may need sudo):
-```
-$ sudo ./install_eyepatch.sh
-```
+replace binary name with the name of the downloaded binary
 
 ### Homebrew
 **1.** Just use:
