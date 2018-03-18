@@ -179,6 +179,60 @@ public:
     }
 };
 
+static class PatchingStandard{
+    std::vector<string> FixtureNames;
+    std::vector<int>DMXStart;
+    std::vector<int>DMXEnd;
+    std::vector<int>footprint;
+    std::vector<bool>isblock;
+public:
+    void newFixture(string n, int s, int e, int f, bool i = false){
+        cout << "adding fixture " << n << " at adress " << s<< " to " << e << " to patching standard"<<endl;
+        FixtureNames.push_back(n);
+        DMXStart.push_back(s);
+        DMXEnd.push_back(e);
+        footprint.push_back(f);
+        isblock.push_back(i);
+    }
+
+    void serialise(ofstream * outfile){
+        cout <<endl<<"Writing to file..."<<endl;
+        *outfile<<"name,dmxstart,dmxfootprint\n";
+        bool iswriting=false;
+        int writeid;
+        for(int i = 1; i < 513; i ++){
+            if(!iswriting){
+                cout<<"Checking allocation of " <<i<<endl;
+                for(int z = 0; z<DMXStart.size(); z++){
+                    if(DMXStart[z] == i){
+                        cout << "allocation found for "<< FixtureNames[z]<<endl;
+                        iswriting=true;
+                        writeid=z;
+                        break;
+                    }
+                }
+            }
+             if (iswriting){
+                if(DMXStart[writeid] == i){
+                    cout << "Writing ";
+                    if(isblock[writeid] && settings.getSetting("csv_output_blocks")){
+                        cout << "block ";
+                        *outfile<<"Blocked: " <<FixtureNames[writeid]<<DMXStart[writeid]<<"-"<<DMXEnd[writeid]<<"\n";
+                    }else if(!isblock[writeid]){
+                        *outfile<<FixtureNames[writeid]<<","<<DMXStart[writeid]<<","<<footprint[writeid]<<"\n";
+                        cout << "fixture ";
+                    }
+                    cout << "to file\n";
+                }else if(DMXEnd[writeid] == i){
+                    iswriting=false;
+                    cout << "Allocation over"<<endl;
+                }
+            }
+        }
+    }
+
+} patchingStandard;
+
 vector<DMXDevice> devices;
 void saveDevices(){
     ofstream outfile;
@@ -390,7 +444,6 @@ void editDevice(){
 void generate(){
     cout << "Generating standard\n";
     bool blocked[512];
-    string output = "name,footprint,address\n";
     for(int i = 0; i < 512; i++){
             blocked[i] = false;
     }
@@ -403,41 +456,41 @@ void generate(){
     }
 
     for(int i = 0; i < devices.size(); i++){
-        int requiredSize = devices[i].quantity * devices[i].footprint;
-        int foundaddress;
-        for(int n = 1; n < 513; n++){//Iterate through entire patch space
-            bool bigEnough = true;
-            cout << "Searching address " << n<<endl;
-            for(int z = n-1; z < requiredSize+n-1; z++){
-                cout << "Checking allocation of " << z<<endl;
-                if (blocked[z]){
-                    cout << "Allocation invalid"<<endl;
-                    bigEnough = false;
+        if(settings.getSetting("dmx_adress_connected")){
+            int requiredSize = devices[i].quantity * devices[i].footprint;
+            int foundaddress;
+            for(int n = 1; n < 513; n++){//Iterate through entire patch space
+                bool bigEnough = true;
+                cout << "Searching address " << n<<endl;
+                for(int z = n-1; z < requiredSize+n-1; z++){
+                    cout << "Checking allocation of " << z+1<<endl;
+                    if (blocked[z]){
+                        cout << "Allocation invalid"<<endl;
+                        bigEnough = false;
+                        break;
+                    }
+                    cout << "Allocation avalible"<<endl;
+                }
+                if(bigEnough){
+                    foundaddress = n;
                     break;
                 }
-                cout << "Allocation avalible"<<endl;
             }
-            if(bigEnough){
-                foundaddress = n;
-                break;
+            for(int z = foundaddress; z < requiredSize+foundaddress; z++){
+                cout << "Blocking " << z<<endl;
+                blocked[z] = true;
             }
-        }
-        for(int z = foundaddress; z < requiredSize+foundaddress; z++){
-            cout << "Blocking " << z<<endl;
-            blocked[z] = true;
-        }
-        for(int n = 0; n < devices[i].quantity;n++){
-            output+=devices[i].name+"(";
-            output+=to_string(n+1)+"),";
-            output+=to_string(devices[i].footprint)+",";
-            output+=to_string((n*devices[i].footprint)+foundaddress);
-            output+="\n";
+            for(int n = 0; n < devices[i].quantity;n++){
+                patchingStandard.newFixture(devices[i].name,(n*devices[i].footprint)+foundaddress,(n*devices[i].footprint)+foundaddress+devices[i].footprint-1,devices[i].footprint);
+            }
+        }else{
+
         }
     }
 
     ofstream outfile;
     outfile.open("PatchingStandard.csv");
-    outfile<<output;
+    patchingStandard.serialise(&outfile);
     outfile.close();
     cout << "Standard generation complete, press any key to continue\n";
     anykey();
