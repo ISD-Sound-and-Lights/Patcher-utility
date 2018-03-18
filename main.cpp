@@ -4,6 +4,7 @@
 #include<string>
 #include"rlutil.h"
 #include <iomanip>
+#include <sstream>
 using namespace rlutil;
 using namespace std;
 
@@ -12,6 +13,7 @@ const int universeSize = 512;
 const string banner = "Eyepatch";
 
 const string seperator=",,,,";
+
 
 vector<string> split(string str, string sep){
     char* cstr=const_cast<char*>(str.c_str());
@@ -134,17 +136,9 @@ void loadBlocks(){
     infile.open("blocks.icsv", ios::in);
 
     string input;
-    vector<string> splitinput;
-
-    infile>>input;
-    splitinput = split(input, "\n");
-    if(splitinput.size()==0){
-        cout << splitinput.size();
-        return;
-    }
-    for(int i = 0; i < splitinput.size(); i++){
+    while(getline(infile, input)){
         blocks.push_back(Block(NULL));
-        blocks[i].deserialise(splitinput[i]);
+        blocks.back().deserialise(input);
     }
 }
 
@@ -153,17 +147,9 @@ void loadDevices(){
     infile.open("devices.icsv", ios::in);
 
     string input;
-    vector<string> splitinput;
-
-    infile>>input;
-    splitinput = split(input, "\n");
-    if(splitinput.size()==0){
-        cout << splitinput.size();
-        return;
-    }
-    for(int i = 0; i < splitinput.size(); i++){
+    while(getline(infile, input)){
         devices.push_back(DMXDevice(NULL));
-        devices[i].deserialise(splitinput[i]);
+        devices.back().deserialise(input);
     }
 }
 
