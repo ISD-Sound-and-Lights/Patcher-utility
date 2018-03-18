@@ -186,7 +186,7 @@ static class PatchingStandard{
     std::vector<int>footprint;
     std::vector<bool>isblock;
 public:
-    void newFixture(string n, int s, int e, int f, bool i = false){
+    void newAllocation(string n, int s, int e, int f, bool i = false){
         cout << "adding fixture " << n << " at adress " << s<< " to " << e << " to patching standard"<<endl;
         FixtureNames.push_back(n);
         DMXStart.push_back(s);
@@ -217,7 +217,7 @@ public:
                     cout << "Writing ";
                     if(isblock[writeid] && settings.getSetting("csv_output_blocks")){
                         cout << "block ";
-                        *outfile<<"Blocked: " <<FixtureNames[writeid]<<DMXStart[writeid]<<"-"<<DMXEnd[writeid]<<"\n";
+                        *outfile<<"Blocked: " <<FixtureNames[writeid]<<","<<DMXStart[writeid]<<"-"<<DMXEnd[writeid]<<"\n";
                     }else if(!isblock[writeid]){
                         *outfile<<FixtureNames[writeid]<<","<<DMXStart[writeid]<<","<<footprint[writeid]<<"\n";
                         cout << "fixture ";
@@ -453,6 +453,7 @@ void generate(){
             cout << "Blocking " <<z<<endl;
             blocked[z] = true;
         }
+        patchingStandard.newAllocation(blocks[i].name, blocks[i].start, blocks[i].end, blocks[i].end-blocks[i].start,true);
     }
 
     for(int i = 0; i < devices.size(); i++){
@@ -481,7 +482,7 @@ void generate(){
                 blocked[z] = true;
             }
             for(int n = 0; n < devices[i].quantity;n++){
-                patchingStandard.newFixture(devices[i].name,(n*devices[i].footprint)+foundaddress,(n*devices[i].footprint)+foundaddress+devices[i].footprint-1,devices[i].footprint);
+                patchingStandard.newAllocation(devices[i].name,(n*devices[i].footprint)+foundaddress,(n*devices[i].footprint)+foundaddress+devices[i].footprint-1,devices[i].footprint);
             }
         }else{
 
