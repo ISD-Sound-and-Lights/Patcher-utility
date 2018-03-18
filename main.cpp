@@ -34,14 +34,26 @@ public:
         cout << name<<endl;
         cout << "\t"<<start<<"-"<<end<<endl;
     }
+    Block(int n){
 
+    }
     Block(int s, int e, string n){
         start = s;
         end = e;
         name = n;
     }
+    void serialise(ofstream* out){
+        *out<<start<<seperator<<name<<seperator<<end<<"\n";
+    }
 
-    
+    void deserialise(string in){
+        vector<string> spl = split(in, seperator);
+
+        start=stoi(spl[0]);
+        name=spl[1];
+        end=stoi(spl[2]);
+    }
+
 };
 
 vector<Block> blocks;
@@ -97,6 +109,43 @@ void saveDevices(){
 
     cout << "Devices saved, press any key to continue...";
     anykey();
+}
+
+void saveBlocks(){
+    ofstream outfile;
+
+    outfile.open("blocks.icsv", ios::out);
+
+    for(int i =0 ; i < blocks.size(); i++){
+        cout << "Saving ";
+        blocks[i].printInfo();
+        cout <<endl;
+        blocks[i].serialise(&outfile);
+    }
+
+    outfile.close();
+
+    cout << "Blocks saved, press any key to continue...";
+    anykey();
+}
+
+void loadBlocks(){
+    ifstream infile;
+    infile.open("blocks.icsv", ios::in);
+
+    string input;
+    vector<string> splitinput;
+
+    infile>>input;
+    splitinput = split(input, "\n");
+    if(splitinput.size()==0){
+        cout << splitinput.size();
+        return;
+    }
+    for(int i = 0; i < splitinput.size(); i++){
+        blocks.push_back(Block(NULL));
+        blocks[i].deserialise(splitinput[i]);
+    }
 }
 
 void loadDevices(){
@@ -320,6 +369,7 @@ void generate(){
 int main(){
     cout << banner;
     loadDevices();
+    loadBlocks();
     cout <<endl<<endl;
     while (true){
         cout << "d. devices\nb. blocks\ng. generate standard\n";
@@ -346,7 +396,7 @@ int main(){
             }
         }else if (in == 'b'){
             while(true){
-                cout <<"n. new block\nl. list blocks\ne. edit blocks\nq. back\n";
+                cout <<"n. new block\nl. list blocks\ne. edit blocks\ns. save blocks\nq. back\n";
 
                 char in = getch();
                 cls();
@@ -358,6 +408,8 @@ int main(){
                     editBlock();
                 }else if ( in == 'q'){
                     break;
+                }else if (in=='s'){
+                    saveBlocks();
                 }
                 cls();
             }
