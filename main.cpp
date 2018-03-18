@@ -198,9 +198,9 @@ static class PatchingStandard{
 
     void deserialise(ifstream * infile){
         string line;
-        while(getline(*in, line)){
+        while(getline(*infile, line)){
             vector<string>parameters=split(line, seperator);
-            newAllocation(parameters[0],parameters[1],parameters[1]+parameters-1, parameters[2]);
+            newAllocation(parameters[0],stoi(parameters[1]),stoi(parameters[1])+stoi(parameters[2])-1, stoi(parameters[2]));
         }
     }
 
@@ -318,6 +318,8 @@ void newDevice(){
     cout << "Device addition mode:"<<endl;
     cout << "Name: ";
     cin >> name;
+    cin.clear();
+    fflush(stdin);
     cout <<"Quantity: ";
     cin >> quantity;
     cout << "DMX Footprint: ";
@@ -519,7 +521,7 @@ void loadStandard(){
     cin >> name;
     ifstream infile;
     infile.open(name);
-    PatchingStandard.deserialise(&infile);
+    patchingStandard.deserialise(&infile);
     infile.close();
 }
 int main(){
@@ -543,7 +545,7 @@ int main(){
     //mainloop
     while (true){
         //header
-        cout << "\033[22;31md. devices\n\033[22;32mb. blocks\n\033[22;34mg. generate standard\nl. load standard\033[01;35ms. settings";
+        cout << "\033[22;31md. devices\n\033[22;32mb. blocks\n\033[22;34mg. generate standard\nl. load standard\n\033[01;35ms. settings";
         resetColor();
 
         //input
