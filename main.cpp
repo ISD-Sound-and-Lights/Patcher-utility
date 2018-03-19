@@ -11,7 +11,48 @@ using namespace rlutil;
 using namespace std;
 const int universeSize = 512;
 
-const string banner = "Eyepatch";
+const string banner =   "syNMNdyo/::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::s"
+                        "mMMMMMMMNmhs+:.`                                                                                   /"
+                        "ymMMMMMMMMMMMMNNdyo/-`                                                                             /"
+                        "/`:+sydNMMMMMMMMMMMMNNdyo/.                                                                        /"
+                        "/     ``.:+shmNMMMMMMMMMMMNmhs/-`                                                                  /"
+                        "/            ``-/oydNMMMMMMMMMMNmho:.                                                              /"
+                        "/                  `.-/shmMMMMMMMMMMNds/.                                                          /"
+                        "/                        `.:ohmMMMMMMMMMNds/.                                                      /"
+                        "/                             `./sdNMMMMMMMMNdo:`                                                  /"
+                        "/                                 `.:ohNMMMMMMMNmy/.                                               /"
+                        "/                                     `.:sdNMMMMMMMNh+-                                            /"
+                        "/                                         `./ymMMMMMMMNdo-`                                        /"
+                        "/                                             `:sdNMMMMMMNdyhddddmmmdddhhyyso+:-.`                 /"
+                        "/                                                `/NMMMMMMMMMMMMMMMMMMMMMMMMMMMNNdy/`              /"
+                        "/                                                -mMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMh.             /"
+                        "/                                                hMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMy             /"
+                        "/                                               `NMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMN`            /"
+                        "/                                               .MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM-            /"
+                        "/      ___                   _      _           .MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM-            /"
+                        "/     | ___  _ ___ _ __ __ _| |_ __| |_          NMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMN`            /"
+                        "/     | _| || / -_| '_ / _` |  _/ _| ' \         sMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMh             /"
+                        "/     |___\_, \___| .__\__,_|\__\__|_||_|        .NMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMN-             /"
+                        "/         |__/    |_|                             /NMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+              /"
+                        "/                                                  +NMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMN:              /"
+                        "/                                                   :dMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNs`            /"
+                        "/                                                    `/dNMMMMMMMMMMMMMMMMMMMMMNdNMMMMMd:           /"
+                        "/                                                      `-odNMMMMMMMMMMMMMMMNdo- .hMMMMMNo`         /"
+                        "/                                                          .:+yhdmmNNmmdho/-     `+NMMMMMh.        /"
+                        "/                                                                ``..``            -dMMMMMm:       /"
+                        "/                                                                                   `sMMMMMNo`     /"
+                        "/                                                                                     +NMMMMMy`    /"
+                        "/                                                                                      -dMMMMMd-   /"
+                        "/                                                                                       `hMMMMMm:  /"
+                        "/                                                                                        `sMMMMMN/ /"
+                        "/                                                                                          +NMMMMM+/"
+                        "/                                                                                           /NMMMMMh"
+                        "/                                                                                            /NMMMMN"
+                        "s:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::smMNhs"
+                        //
+                        // This banner is without colour. Colour will be added at a later date.
+                        //
+    
 
 const string seperator=",,,,";
 
