@@ -223,18 +223,20 @@ public:
 static class PatchingStandard{
     public:
     std::vector<string> FixtureNames;
+    std::vector<int> id;
     std::vector<int>DMXStart;
     std::vector<int>DMXEnd;
     std::vector<int>footprint;
     std::vector<bool>isblock;
 
-    void newAllocation(string n, int s, int e, int f, bool i = false){
+    void newAllocation(string n, int s, int e, int f, int di,bool i = false){
         cout << "adding fixture " << n << " at adress " << s<< " to " << e << " to patching standard"<<endl;
         FixtureNames.push_back(n);
         DMXStart.push_back(s);
         DMXEnd.push_back(e);
         footprint.push_back(f);
         isblock.push_back(i);
+        id.push_back(di);
     }
 
     void listAllDevices(){
@@ -255,7 +257,7 @@ static class PatchingStandard{
         while(getline(*infile, line)){
             vector<string>parameters=split(line, seperator);
             cout << "Allocating "<< parameters[0] <<" from standard file\n";
-            newAllocation(parameters[0],stoi(parameters[1]),stoi(parameters[1])+stoi(parameters[2])-1, stoi(parameters[2]));
+            newAllocation(parameters[0],stoi(parameters[1]),stoi(parameters[1])+stoi(parameters[2])-1, 0,stoi(parameters[2]));
         }
     }
 
@@ -264,7 +266,7 @@ static class PatchingStandard{
         *outfile<<"name,dmxstart,dmxfootprint\n";
         bool iswriting=false;
         int writeid;
-        for(int i = 1; i < 513; i ++){
+        for(int i = 1; i < 513; i++){
             if(!iswriting){
                 cout<<"Checking allocation of " <<i<<endl;
                 for(int z = 0; z<DMXStart.size(); z++){
@@ -283,12 +285,20 @@ static class PatchingStandard{
                         cout << "block ";
                         *outfile<<"Blocked: " <<FixtureNames[writeid]<<","<<DMXStart[writeid]<<"-"<<DMXEnd[writeid]<<"\n";
                     }else if(!isblock[writeid]){
-                        *outfile<<FixtureNames[writeid]<<","<<DMXStart[writeid]<<","<<footprint[writeid]<<"\n";
+                        *outfile<<FixtureNames[writeid];
+                        if(settings.getSetting("csv_output_idnum")){
+                            *outfile << "(" << id[writeid] << ")";
+                        }
+                        *outfile <<","<<DMXStart[writeid]<<","<<footprint[writeid]<<"\n";
                         cout << "fixture ";
                     }
                     cout << "to file\n";
+                    cout << "Looking for DMX end " << DMXEnd[writeid]<<endl;
                 }else if(DMXEnd[writeid] == i){
                     iswriting=false;
+                    cout << "Allocation over"<<endl;
+                }else if (DMXEnd[writeid] == i-1){
+                    iswriting = false;
                     cout << "Allocation over"<<endl;
                 }
             }
@@ -430,7 +440,7 @@ void newFixedDevice(){
     cout << "DMX Footprint: ";
     cin >> footprint;
 
-    patchingStandard.newAllocation(name, startAdress, startAdress+footprint-1,footprint);
+    patchingStandard.newAllocation(name, startAdress, startAdress+footprint-1,footprint,0);
 }
 
 void newDevice(){
@@ -594,7 +604,7 @@ void generate(){
             cout << "Blocking " <<z<<" for allocated blocks"<<endl;
             blocked[z] = true;
         }
-        patchingStandard.newAllocation(blocks[i].name, blocks[i].start, blocks[i].end, blocks[i].end-blocks[i].start,true);
+        patchingStandard.newAllocation(blocks[i].name, blocks[i].start, blocks[i].end, blocks[i].end-blocks[i].start,i,true);
     }
 
     for(int i = 0; i < devices.size(); i++){
@@ -623,7 +633,7 @@ void generate(){
                 blocked[z] = true;
             }
             for(int n = 0; n < devices[i].quantity;n++){
-                patchingStandard.newAllocation(devices[i].name,(n*devices[i].footprint)+foundaddress,(n*devices[i].footprint)+foundaddress+devices[i].footprint-1,devices[i].footprint);
+                patchingStandard.newAllocation(devices[i].name,(n*devices[i].footprint)+foundaddress,(n*devices[i].footprint)+foundaddress+devices[i].footprint-1,devices[i].footprint, n);
             }
         }else{
 
@@ -660,6 +670,7 @@ int main(){
 
     //Register settings
     settings.registerSetting("csv_output_blocks");
+    settings.registerSetting("csv_output_idnum");
     settings.registerSetting("dmx_adress_connected");
     settings.registerSetting("theme_colours");
     cout <<endl;
