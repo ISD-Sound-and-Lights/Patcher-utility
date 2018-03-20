@@ -48,11 +48,11 @@ const string banner =   "syNMNdyo/::::::::::::::::::::::::::::::::::::::::::::::
                         "/                                                                                          +NMMMMM+/"
                         "/                                                                                           /NMMMMMh"
                         "/                                                                                            /NMMMMN"
-                        "s:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::smMNhs"
+                        "s:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::smMNhs";
                         //
                         // This banner is without colour. Colour will be added at a later date.
                         //
-    
+
 
 const string seperator=",,,,";
 
